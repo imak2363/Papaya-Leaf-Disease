@@ -272,14 +272,16 @@ Then open `http://localhost:5000` in your browser to use the disease detection i
 If you find this work useful in your research, please cite:
 
 ```bibtex
-@article{ejaz2026swinghost,
-  title     = {SwinGhost-ClustNet: An Explainable Deep Ensemble Model for Papaya Leaf Disease Detection and Field Deployment in Bangladeshi Agriculture},
-  author    = {Md. Sabbir Ejaz and others},
-  journal   = {Smart Agricultural Technology},
-  publisher = {Elsevier},
-  year      = {2026},
-  doi       = {10.1016/j.atech.2026.100481},
-  url       = {https://www.sciencedirect.com/science/article/pii/S2772375526000481}
+@article{DEY2026101824,
+title = {SwinGhost-ClustNet: An explainable deep ensemble model for papaya leaf disease detection and field deployment in Bangladeshi agriculture},
+journal = {Smart Agricultural Technology},
+volume = {13},
+pages = {101824},
+year = {2026},
+issn = {2772-3755},
+doi = {https://doi.org/10.1016/j.atech.2026.101824},
+url = {https://www.sciencedirect.com/science/article/pii/S2772375526000481},
+author = {Shourav Dey and Mohammad Kamrul Hasan and Apurba Adhikary and Sanjida Akter and Md Sabbir Ejaz},
 }
 ```
 
