@@ -85,7 +85,7 @@ The model was trained and evaluated on a curated dataset of **9,342 papaya leaf 
 8. 🔴 Ring Spot
 
 > 📦 **Dataset Reference:** BDPapayaLeaf — *A dataset of papaya leaf for disease detection, classification, and analysis*
-
+> Dataset available in the following link: https://www.kaggle.com/datasets/shourav123/enlarged-data
 ---
 
 ## 🏗️ Model Architecture
