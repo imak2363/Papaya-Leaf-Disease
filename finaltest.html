@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>পেঁপে পাতার রোগ শনাক্তকরণ</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center; 
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .upload-area { 
+            border: 3px dashed #3498db; 
+            padding: 40px; 
+            text-align: center; 
+            border-radius: 15px; 
+            margin: 20px 0; 
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #2980b9;
+            background: #e3f2fd;
+        }
+        input[type="file"] { 
+            margin: 15px 0; 
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        button { 
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white; 
+            padding: 15px 40px; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        button:hover { 
+            background: linear-gradient(45deg, #219a52, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #result { 
+            margin-top: 30px; 
+        }
+        .success { 
+            border: 2px solid #27ae60; 
+            padding: 25px; 
+            border-radius: 15px; 
+            background: linear-gradient(135deg, #d5f4e6, #c8e6c9);
+            animation: slideIn 0.5s ease;
+        }
+        .error { 
+            border: 2px solid #e74c3c; 
+            padding: 25px; 
+            border-radius: 15px; 
+            background: linear-gradient(135deg, #fadbd8, #ffcdd2);
+            animation: slideIn 0.5s ease;
+        }
+        .loading { 
+            text-align: center; 
+            color: #3498db; 
+            font-size: 20px;
+            padding: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+        }
+        .confidence-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥭 পেঁপে পাতার রোগ শনাক্তকরণ সিস্টেম</h1>
+        
+        <div class="upload-area">
+            <h3>📸 পেঁপে পাতার ছবি আপলোড করুন</h3>
+            <p>সমর্থিত ফরম্যাট: JPG, PNG, JPEG, GIF, BMP</p>
+            <form id="uploadForm">
+                <input type="file" id="imageInput" accept="image/*" required>
+                <br><br>
+                <button type="submit" id="submitBtn">🔍 রোগ শনাক্ত করুন</button>
+            </form>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const imageFile = document.getElementById('imageInput').files[0];
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!imageFile) {
+                alert('অনুগ্রহ করে একটি ছবি নির্বাচন করুন!');
+                return;
+            }
+            
+            // File size check (16MB max)
+            if (imageFile.size > 16 * 1024 * 1024) {
+                alert('ফাইল সাইজ খুব বড়! সর্বোচ্চ ১৬MB হতে পারে।');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            
+            // UI updates
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ প্রসেসিং হচ্ছে...';
+            
+            document.getElementById('result').innerHTML = `
+                <div class="loading">
+                    ⏳ আপনার ছবি বিশ্লেষণ করা হচ্ছে...<br>
+                    <small>অনুগ্রহ করে অপেক্ষা করুন</small>
+                </div>
+            `;
+            
+            try {
+                console.log('API কল করা হচ্ছে...');
+                
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'cors'
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                if (result.success) {
+                    const confidence = result.prediction.confidence;
+                    const confidenceColor = confidence >= 80 ? '#27ae60' : confidence >= 60 ? '#f39c12' : '#e74c3c';
+                    
+                    document.getElementById('result').innerHTML = `
+                        <div class="success">
+                            <h3>📊 শনাক্তকরণের ফলাফল</h3>
+                            
+                            <div class="result-item">
+                                <strong>🦠 রোগের নাম:</strong> ${result.prediction.disease_bangla}
+                            </div>
+                            
+                            <div class="result-item">
+                                <strong>🎯 নিশ্চয়তার মাত্রা:</strong> ${confidence}%
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${confidence}%; background: ${confidenceColor};"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="result-item">
+                                <strong>📝 বিবরণ:</strong> ${result.prediction.description}
+                            </div>
+                            
+                            <div class="result-item">
+                                <strong>💊 প্রয়োজনীয় কীটনাশক:</strong>
+                                <ul>
+                                    ${result.recommendations.pesticides.map(p => `<li>${p}</li>`).join('')}
+                                </ul>
+                            </div>
+                            
+                            <div class="result-item">
+                                <strong>🔧 চিকিৎসা পদ্ধতি:</strong> ${result.recommendations.treatment}
+                            </div>
+                            
+                            ${result.warning ? `
+                                <div class="result-item" style="background: #fff3cd; border-left: 4px solid #ffc107;">
+                                    <strong>⚠️ সতর্কতা:</strong> ${result.warning}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = `
+                        <div class="error">
+                            <h3>❌ সমস্যা হয়েছে</h3>
+                            <p><strong>Error:</strong> ${result.error || result.message}</p>
+                            ${result.details ? `<p><strong>Details:</strong> ${result.details}</p>` : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Network Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <div class="error">
+                        <h3>❌ নেটওয়ার্ক সমস্যা</h3>
+                        <p>API এর সাথে সংযোগ হচ্ছে না।</p>
+                        <p><strong>সমাধান:</strong></p>
+                        <ul>
+                            <li>API চালু আছে কিনা চেক করুন</li>
+                            <li>Terminal এ <code>python app.py</code> রান করুন</li>
+                            <li>Browser এ <a href="http://127.0.0.1:5000" target="_blank">http://127.0.0.1:5000</a> চেক করুন</li>
+                        </ul>
+                        <p><strong>Error Details:</strong> ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🔍 রোগ শনাক্ত করুন';
+            }
+        };
+        
+        // File input change handler
+        document.getElementById('imageInput').onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                console.log('File selected:', file.name, 'Size:', file.size, 'bytes');
+            }
+        };
+    </script>
+</body>
+</html>
